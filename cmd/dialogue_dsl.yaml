@@ -17,8 +17,13 @@ transitions:
     response: "I can help you with the following: 'check balance', 'exit'."
 
   - from: help
+    to: checking_balance
+    input: "check balance"
+    response: "Let me check your balance... {balance}"
+
+  - from: help
     to: main_menu
-    input: "continue"
+    input: "*"
     response: "Is there anything else I can do for you? (e.g., 'check balance', 'exit')"
 
   - from: main_menu
@@ -28,10 +33,20 @@ transitions:
 
   - from: checking_balance
     to: main_menu
-    input: "continue"
+    input: "*"
     response: "Is there anything else I can do for you? (e.g., 'check balance', 'exit')"
 
   - from: main_menu
+    to: farewell
+    input: "exit"
+    response: "Thank you for using our service. Goodbye!"
+  
+  - from: help
+    to: farewell
+    input: "exit"
+    response: "Thank you for using our service. Goodbye!"
+
+  - from: checking_balance
     to: farewell
     input: "exit"
     response: "Thank you for using our service. Goodbye!"
