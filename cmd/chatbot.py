@@ -128,23 +128,33 @@ def create_state_machine(dsl):
     return StateMachine(states, transitions, initial_state)
 
 
-@app.route('/chat/<user_id>', methods=['POST'])
-def chat(user_id):
+@app.route('/newchat/<user_id>', methods=['POST'])
+def new_chat(user_id):
     """新聊天接口，传入user_id，初始化状态机"""
     # 加载DSL文件并创建状态机
-    dsl_file_path = "cmd/dialogue_dsl.yaml"
+    dsl_file_path = "dialogue_dsl.yaml"
     dsl = load_dsl(dsl_file_path)
-    chatbot = create_state_machine(dsl)
-
+    
     # 创建上下文并传入用户ID
     context = Context(user_id, query_user_balance)
     
-    user_input = request.json.get('question', '')
+    # 获取或创建状态机
+    if user_id not in state_machines:
+        chatbot = create_state_machine(dsl)
+        state_machines[user_id] = chatbot
+    else:
+        chatbot = state_machines[user_id]
 
-    # 返回初始状态的响应
+    user_input = request.json.get('input', '')
+
+    # 处理输入并获取响应
     response = chatbot.handle_input(user_input, context)
-    
+
     return jsonify({"response": response})
+
+# 用字典存储每个用户的状态机
+state_machines = {}
+
 
 
 if __name__ == "__main__":
